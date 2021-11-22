@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlaneCollisionType : MonoBehaviour
+public class PlaneCollisionType : CollisionType
 {
-    // Start is called before the first frame update
-    void Start()
+    public float length;
+    public float width;
+    public override TypeEnum GetType()
     {
-        
+        return TypeEnum.PLANE;
     }
 
-    // Update is called once per frame
-    void Update()
+    public Vector3 GetPlaneNormal()
     {
-        
+        return transform.up;
     }
 }

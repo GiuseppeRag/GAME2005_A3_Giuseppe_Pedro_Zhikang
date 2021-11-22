@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class OnCollisionHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static void OnSphere_SphereCollision(CustomPhysicsObject sphere1, CustomPhysicsObject sphere2)
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void OnSphere_PlaneCollision(CustomPhysicsObject sphere, CustomPhysicsObject plane)
     {
-        
+        sphere.acceleration.y = 0.0f;
+        sphere.velocity.y = 0.0f;
     }
+
+    public static void OnPlane_SphereCollision(CustomPhysicsObject plane, CustomPhysicsObject sphere) { OnSphere_PlaneCollision(sphere, plane); }
 }

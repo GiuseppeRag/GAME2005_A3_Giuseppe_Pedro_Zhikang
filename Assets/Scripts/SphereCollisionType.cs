@@ -2,17 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SphereCollisionType : MonoBehaviour
+public class SphereCollisionType : CollisionType
 {
-    // Start is called before the first frame update
-    void Start()
+    public float radius;
+    public override TypeEnum GetType()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return TypeEnum.SPHERE;
     }
 }

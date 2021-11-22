@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollisionType : MonoBehaviour
+public enum TypeEnum
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    SPHERE = 0,
+    PLANE = 1
+}
+public abstract class CollisionType : MonoBehaviour
+{
+    public abstract TypeEnum GetType();
 }
