@@ -17,6 +17,9 @@ public class CameraController : MonoBehaviour
     private float yRotation = 0.0f;
     private Vector2 mouse;
 
+    [Header("User Interface")]
+    public GameObject UIPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,10 +55,13 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (enableCameraLook)
-            LookAround();
+        if (!UIPanel.activeInHierarchy)
+        {
+            if (enableCameraLook)
+                LookAround();
 
-        if (enableCameraMove)
-            Move();
+            if (enableCameraMove)
+                Move();
+        }
     }
 }
