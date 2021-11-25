@@ -40,21 +40,15 @@ public class OnCollisionHandler : MonoBehaviour
 
         Vector3 planeNormal = planeCollision.GetPlaneNormal();
 
+        // Stop the velocity on the appropriate axis depending on the plane's normal
         if (planeNormal.x != 0)
-        {
             sphere.velocity.x = 0.0f;
-        }
         else if (planeNormal.z != 0)
-        {
             sphere.velocity.z = 0.0f;
-        }
         else
-        {
             sphere.velocity.y = 0.0f;
-        }
 
-        // "It just works" -Tod Howard
-        // For some reason when the velocity is more than 150 it doesn't work
+        // Perform the displacement of the sphere so it does not penetrate the plane
         Vector3 displacement = sphere.transform.position - plane.transform.position;
         float dotProduct = Vector3.Dot(planeNormal, displacement);
         float distance = Mathf.Abs(dotProduct);
