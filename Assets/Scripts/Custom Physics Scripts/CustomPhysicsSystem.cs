@@ -10,19 +10,21 @@ public class CustomPhysicsSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //sets all objects gravity to match that of the system, only if the object allows it
-        foreach (CustomPhysicsObject physicsObject in objectsList)
-        {
-            if (physicsObject.UseSystemGravity())
-                physicsObject.acceleration.y = gravity;
-        }
+
     }
 
     void UpdateMovement()
     {
         foreach (CustomPhysicsObject physicsObject in objectsList)
         {
-            physicsObject.velocity += physicsObject.acceleration * Time.deltaTime;
+            Vector3 accel = physicsObject.acceleration;
+
+            //If the object is using the system's gravity, replace its y acceleration with the systems gravity
+            if (physicsObject.UseSystemGravity())
+                physicsObject.velocity += new Vector3(accel.x, gravity, accel.y) * Time.deltaTime;
+            else
+                physicsObject.velocity += accel * Time.deltaTime;
+
             physicsObject.transform.position += physicsObject.velocity * Time.deltaTime;
         }
     }
