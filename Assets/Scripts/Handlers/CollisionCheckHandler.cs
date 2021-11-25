@@ -28,8 +28,29 @@ public class CollisionCheckHandler : MonoBehaviour
     //Used for Collision between a Sphere and a Plane
     public static bool Sphere_PlaneCollision(SphereCollisionType sphere, PlaneCollisionType plane)
     {
+        Vector3 planeNormal = plane.GetPlaneNormal();
+        float widthFromCenter = (plane.width / 2) + sphere.radius;
+        float lengthFromCenter = (plane.length / 2) + sphere.radius;
+
+
         //Get the distance between any plane point and the center of the sphere
         Vector3 distanceVec = sphere.transform.position - plane.transform.position;
+
+        if (planeNormal.x != 0)
+        {
+            if (Mathf.Abs(distanceVec.y) > widthFromCenter || Mathf.Abs(distanceVec.z) > lengthFromCenter)
+                    return false;
+        }
+        else if (planeNormal.z != 0)
+        {
+            if (Mathf.Abs(distanceVec.y) > widthFromCenter || Mathf.Abs(distanceVec.x) > lengthFromCenter)
+                return false;
+        }
+        else
+        {
+            if (Mathf.Abs(distanceVec.x) > widthFromCenter || Mathf.Abs(distanceVec.z) > lengthFromCenter)
+                return false;
+        }
 
         //Use the dot product to determine the distance of the "shadow" of the sphere, and the sphere itself
         //We get the absolute value of it, since it does not matter when determining the overlap
