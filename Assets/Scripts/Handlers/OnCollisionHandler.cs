@@ -6,7 +6,29 @@ public class OnCollisionHandler : MonoBehaviour
 {
     public static void OnSphere_SphereCollision(CustomPhysicsObject sphere1, CustomPhysicsObject sphere2)
     {
+        //Cast spheres.
+        SphereCollisionType sphereCollision1 = (SphereCollisionType)sphere1.collisionType;
+        SphereCollisionType sphereCollision2 = (SphereCollisionType)sphere2.collisionType;
+
+        Vector3 displacementBetweenSpheres = sphere2.transform.position - sphere1.transform.position;
+        float distanceBetween = displacementBetweenSpheres.magnitude;
+        float sumRad = sphereCollision1.radius + sphereCollision2.radius;
+        float penetration = sumRad - distanceBetween;
+        bool isOverlapping = penetration > 0.0f;
+
+        if (!isOverlapping)
+            return; // No collision.
+
+        // Normal for the collision.
+        Vector3 collisionNormal = displacementBetweenSpheres / distanceBetween;
         
+        // Move spheres to stop overlapping.
+        Vector3 minimumTranslationVector = collisionNormal * penetration;
+        Vector3 translationA = minimumTranslationVector * -0.5f;
+        Vector3 translationB = minimumTranslationVector * 0.5f;
+
+        sphere1.transform.position += translationA;
+        sphere2.transform.position += translationB;
     }
 
     public static void OnSphere_PlaneCollision(CustomPhysicsObject sphere, CustomPhysicsObject plane)
