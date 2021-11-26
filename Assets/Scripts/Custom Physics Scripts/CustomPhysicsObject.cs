@@ -6,6 +6,7 @@ public class CustomPhysicsObject : MonoBehaviour
 {
     [Header("Properties")]
     public float mass;
+    public bool motionless = false;
     public Vector3 velocity = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
     public bool useSystemGravity = true;
@@ -14,6 +15,7 @@ public class CustomPhysicsObject : MonoBehaviour
     [Header("Collision")]
     public CollisionType collisionType;
     bool hasCollision = false;
+    bool isGrounded = false;
 
     // Are used for resetting the scene
     Vector3 initialPosition;
@@ -64,6 +66,18 @@ public class CustomPhysicsObject : MonoBehaviour
     public void SetHasCollision(bool flag)
     {
         hasCollision = flag;
+    }
+
+    //Is Grounded Flag
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+
+    //Set Is Grounded Flag
+    public void SetIsGrounded(bool grounded)
+    {
+        isGrounded = grounded;
     }
 
     //Toggles Y movement and sets it back once enabled again

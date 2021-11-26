@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OnCollisionHandler : MonoBehaviour
 {
+    //Handles the Sphere-Sphere Collision
     public static void OnSphere_SphereCollision(CustomPhysicsObject sphere1, CustomPhysicsObject sphere2)
     {
         //Cast spheres.
@@ -31,20 +32,26 @@ public class OnCollisionHandler : MonoBehaviour
         sphere2.transform.position += translationB;
     }
 
+    //Handles the Sphere-Plane Collision
     public static void OnSphere_PlaneCollision(CustomPhysicsObject sphere, CustomPhysicsObject plane)
     {
-        // Due to reason I can't just put them on a single line
-        // So I have to cast them then use them
+        //Cast the collision types
         PlaneCollisionType planeCollision = (PlaneCollisionType)plane.collisionType;
         SphereCollisionType sphereCollision = (SphereCollisionType)sphere.collisionType;
 
         Vector3 planeNormal = planeCollision.GetPlaneNormal();
 
         // Stop the velocity on the appropriate axis depending on the plane's normal
+        //Is it a YZ plane?
         if (planeNormal.x != 0)
             sphere.velocity.x = 0.0f;
+        //Is it an XY plane?
         else if (planeNormal.z != 0)
+        {
             sphere.velocity.z = 0.0f;
+            sphere.SetIsGrounded(true);
+        }
+        //Is it an XZ plane?
         else
             sphere.velocity.y = 0.0f;
 
@@ -57,5 +64,6 @@ public class OnCollisionHandler : MonoBehaviour
         sphere.transform.position += planeNormal * penetration;
     }
 
+    //Calls The OnSphere_PlaneCollsion function. Exists to avoid naming problems
     public static void OnPlane_SphereCollision(CustomPhysicsObject plane, CustomPhysicsObject sphere) { OnSphere_PlaneCollision(sphere, plane); }
 }

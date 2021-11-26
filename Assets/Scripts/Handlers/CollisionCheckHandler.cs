@@ -36,16 +36,20 @@ public class CollisionCheckHandler : MonoBehaviour
         //Get the distance between any plane point and the center of the sphere
         Vector3 distanceVec = sphere.transform.position - plane.transform.position;
 
+        //Check if the ball is within the plane's boundaries. If not, collision won't happen regardless of the dot product
+        //Is it a YZ plane?
         if (planeNormal.x != 0)
         {
             if (Mathf.Abs(distanceVec.y) > widthFromCenter || Mathf.Abs(distanceVec.z) > lengthFromCenter)
                     return false;
         }
+        //Is it an XY plane?
         else if (planeNormal.z != 0)
         {
             if (Mathf.Abs(distanceVec.y) > widthFromCenter || Mathf.Abs(distanceVec.x) > lengthFromCenter)
                 return false;
         }
+        //Is it an XZ plane?
         else
         {
             if (Mathf.Abs(distanceVec.x) > widthFromCenter || Mathf.Abs(distanceVec.z) > lengthFromCenter)
@@ -61,6 +65,6 @@ public class CollisionCheckHandler : MonoBehaviour
     }
 
 
-    // These Functions exists for less confusion with names
+    // This Functions exists for less confusion with names
     public static bool Plane_SphereCollision(PlaneCollisionType plane, SphereCollisionType sphere) { return Sphere_PlaneCollision(sphere, plane); }
 }

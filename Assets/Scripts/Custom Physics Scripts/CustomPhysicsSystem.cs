@@ -13,10 +13,15 @@ public class CustomPhysicsSystem : MonoBehaviour
 
     }
 
+    //Moves the objects in the scene (if they have a motion)
     void UpdateMovement()
     {
         foreach (CustomPhysicsObject physicsObject in objectsList)
         {
+            //Skips to the next object if the current one is flagged as motionless
+            if (physicsObject.motionless)
+                continue;
+
             Vector3 accel = physicsObject.acceleration;
 
             //If the object is using the system's gravity, replace its y acceleration with the systems gravity
@@ -29,6 +34,7 @@ public class CustomPhysicsSystem : MonoBehaviour
         }
     }
 
+    //This function only checks the type of the objects to perform the necessary Check and Handling, which are done by the handler functions
     void UpdateCollision()
     {
         //Multiple loops required since we need to check the collision of different objects in the list with each other
