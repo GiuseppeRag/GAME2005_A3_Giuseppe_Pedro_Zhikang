@@ -11,14 +11,11 @@ public class OnCollisionHandler : MonoBehaviour
         SphereCollisionType sphereCollision1 = (SphereCollisionType)sphere1.collisionType;
         SphereCollisionType sphereCollision2 = (SphereCollisionType)sphere2.collisionType;
 
+        //Find the penetration Depth
         Vector3 displacementBetweenSpheres = sphere2.transform.position - sphere1.transform.position;
         float distanceBetween = displacementBetweenSpheres.magnitude;
         float sumRad = sphereCollision1.radius + sphereCollision2.radius;
         float penetration = sumRad - distanceBetween;
-        bool isOverlapping = penetration > 0.0f;
-
-        if (!isOverlapping)
-            return; // No collision.
 
         // Normal for the collision.
         Vector3 collisionNormal = displacementBetweenSpheres / distanceBetween;
