@@ -61,6 +61,94 @@ public class OnCollisionHandler : MonoBehaviour
         sphere.transform.position += planeNormal * penetration;
     }
 
+    // Helper class for Sphere - AABB collision to reduce lines of code
+    static bool OnSphere_AABBCollisionHelper(CustomPhysicsObject sphere, Vector3 facePos, Vector3 faceNormal)
+    {
+        SphereCollisionType sphereComponent = (SphereCollisionType)sphere.collisionType;
+
+        // Same code as Sphere-Plane collision checking, only this time we have a response
+        Vector3 distanceVec = sphere.transform.position - facePos;
+        float distance = Mathf.Abs(Vector3.Dot(distanceVec, faceNormal));
+        float penetration = sphereComponent.radius - distance;
+
+        //If there's a penetration depth, we move the sphere away from that face and stop its velocity
+        if (penetration > 0)
+        {
+            sphere.transform.position += penetration * faceNormal;
+            sphere.velocity += new Vector3(Mathf.Abs(sphere.velocity.x) * faceNormal.x, Mathf.Abs(sphere.velocity.y) * faceNormal.y, Mathf.Abs(sphere.velocity.z) * faceNormal.z);
+            return true;
+        }
+        return false;
+    }
+
+    // Handles the Sphere - AABB Collision
+    public static void OnSphere_AABBCollision(CustomPhysicsObject sphere, CustomPhysicsObject aabb)
+    {
+        AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
+
+        Vector3 mid = aabb.transform.position;
+
+        //VERY DEMANDING IN PROCESSING
+        //Treat each of the faces of the AABB box as a plane, and perfect sphere plane collision multiple times
+        //Each face requires its position and normal to be passed
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y + (aabbComponent.height / 2), mid.z), aabbComponent.GetUpNormal()))
+            return;
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x + (aabbComponent.width / 2), mid.y, mid.z), aabbComponent.GetRightNormal()))
+            return;
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y, mid.z + (aabbComponent.length / 2)), aabbComponent.GetFrontNormal()))
+            return;
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y - (aabbComponent.height / 2), mid.z), aabbComponent.GetDownNormal()))
+            return;
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x - (aabbComponent.width / 2), mid.y, mid.z), aabbComponent.GetLeftNormal()))
+            return;
+        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y, mid.z - (aabbComponent.length / 2)), aabbComponent.GetBackNormal()))
+            return;
+    }
+
+
+    // Handles the Plane - AABB Collision
+    public static void OnPlane_AABBCollision(CustomPhysicsObject plane, CustomPhysicsObject aabb)
+    {
+        PlaneCollisionType planeComponent = (PlaneCollisionType)plane.collisionType;
+        AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
+
+        Vector3 extents = aabbComponent.GetMaxPoint() - aabb.transform.position;
+
+        float projection = (extents.x * Mathf.Abs(planeComponent.GetPlaneNormal().x)) +
+                           (extents.y * Mathf.Abs(planeComponent.GetPlaneNormal().y)) +
+                           (extents.z * Mathf.Abs(planeComponent.GetPlaneNormal().z));
+
+        float dot = Vector3.Dot(planeComponent.GetPlaneNormal(), aabb.transform.position) + planeComponent.GetConstant();
+
+        float penetration = dot - Mathf.Abs(projection);
+
+        //Update the AABB's position and velocity
+        aabb.transform.position -= penetration * planeComponent.GetPlaneNormal();
+        aabb.velocity += new Vector3(Mathf.Abs(aabb.velocity.x) * planeComponent.GetPlaneNormal().x, 
+                                     Mathf.Abs(aabb.velocity.y) * planeComponent.GetPlaneNormal().y, 
+                                     Mathf.Abs(aabb.velocity.z) * planeComponent.GetPlaneNormal().z);
+    }
+
+    // Helper class for AABB - AABB collision to reduce lines of code
+    static bool OnAABB_AABBCollisionHelper(CustomPhysicsObject aabb, Vector3 facePos, Vector3 faceNormal, Vector3 faceConstant)
+    {
+        return false;
+    }
+
+    // Handles the AABB - AABB Collision
+
+    public static void OnAABB_AABBCollision(CustomPhysicsObject aabb1, CustomPhysicsObject aabb2)
+    {
+        float velocityMagnitude = Mathf.Sqrt(Mathf.Pow(aabb1.velocity.x, 2) + Mathf.Pow(aabb1.velocity.y, 2) + Mathf.Pow(aabb1.velocity.z, 2));
+        Vector3 velocityNormal = aabb1.velocity / velocityMagnitude;
+
+
+    }
+
     //Calls The OnSphere_PlaneCollsion function. Exists to avoid naming problems
     public static void OnPlane_SphereCollision(CustomPhysicsObject plane, CustomPhysicsObject sphere) { OnSphere_PlaneCollision(sphere, plane); }
+
+    public static void OnAABB_SphereCollision(CustomPhysicsObject aabb, CustomPhysicsObject sphere) { OnSphere_AABBCollision(sphere, aabb); }
+
+    public static void OnAABB_PlaneCollision(CustomPhysicsObject aabb, CustomPhysicsObject plane) { OnPlane_AABBCollision(plane, aabb); }
 }

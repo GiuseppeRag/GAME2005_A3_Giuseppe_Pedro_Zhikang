@@ -4,7 +4,8 @@ using UnityEngine;
 public enum TypeEnum
 {
     SPHERE = 0,
-    PLANE = 1
+    PLANE = 1,
+    AABB = 2
 }
 
 [RequireComponent(typeof(CustomPhysicsObject))]

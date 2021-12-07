@@ -67,10 +67,19 @@ public class CustomPhysicsSystem : MonoBehaviour
                                 if (CollisionCheckHandler.Sphere_PlaneCollision(sphere, plane))
                                     OnCollisionHandler.OnSphere_PlaneCollision(objectA, objectB);
                                 break;
+
+                            //Handle Sphere-AABB Collision
+                            case TypeEnum.AABB:
+                                SphereCollisionType sphere3 = (SphereCollisionType)objectA.collisionType;
+                                AABBCollisionType aabb = (AABBCollisionType)objectB.collisionType;
+
+                                if (CollisionCheckHandler.Sphere_AABBCollision(sphere3, aabb))
+                                    OnCollisionHandler.OnSphere_AABBCollision(objectA, objectB);
+                                break;
                         }
                         break;
                     case TypeEnum.PLANE:
-                        switch (objectsList[indexB].collisionType.GetType())
+                        switch (objectB.collisionType.GetType())
                         {
                             //Handle Plane-Sphere Collision
                             case TypeEnum.SPHERE:
@@ -79,6 +88,46 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.Plane_SphereCollision(plane, sphere))
                                     OnCollisionHandler.OnPlane_SphereCollision(objectA, objectB);
+                                break;
+
+                            //Handle Plane-AABB Collision
+                            case TypeEnum.AABB:
+                                PlaneCollisionType plane1 = (PlaneCollisionType)objectA.collisionType;
+                                AABBCollisionType aabb = (AABBCollisionType)objectB.collisionType;
+
+                                if (CollisionCheckHandler.Plane_AABBCollision(plane1, aabb))
+                                    OnCollisionHandler.OnPlane_AABBCollision(objectA, objectB);
+                                break;
+                        }
+                        break;
+                    case TypeEnum.AABB:
+                        switch(objectB.collisionType.GetType())
+                        {
+                            //Handle AABB-Sphere Collision
+                            case TypeEnum.SPHERE:
+                                AABBCollisionType aabb = (AABBCollisionType)objectA.collisionType;
+                                SphereCollisionType sphere = (SphereCollisionType)objectB.collisionType;
+
+                                if (CollisionCheckHandler.AABB_SphereCollision(aabb, sphere))
+                                    OnCollisionHandler.OnAABB_SphereCollision(objectA, objectB);
+                                break;
+
+                            //Handle AABB-Plane Collision
+                            case TypeEnum.PLANE:
+                                AABBCollisionType aabb1 = (AABBCollisionType)objectA.collisionType;
+                                PlaneCollisionType plane = (PlaneCollisionType)objectB.collisionType;
+
+                                if (CollisionCheckHandler.AABB_PlaneCollision(aabb1, plane))
+                                    OnCollisionHandler.OnAABB_PlaneCollision(objectA, objectB);
+                                break;
+
+                            //Handle AABB-AABB Collision
+                            case TypeEnum.AABB:
+                                AABBCollisionType aabb2 = (AABBCollisionType)objectA.collisionType;
+                                AABBCollisionType aabb3 = (AABBCollisionType)objectB.collisionType;
+
+                                if (CollisionCheckHandler.AABB_AABBCollision(aabb2, aabb3))
+                                    OnCollisionHandler.OnAABB_AABBCollision(objectA, objectB);
                                 break;
                         }
                         break;

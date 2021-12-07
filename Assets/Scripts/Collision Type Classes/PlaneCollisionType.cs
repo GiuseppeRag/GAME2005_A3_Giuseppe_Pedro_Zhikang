@@ -17,4 +17,9 @@ public class PlaneCollisionType : CollisionType
     {
         return transform.up;
     }
+
+    public float GetConstant()
+    {
+        return Vector3.Dot(GetPlaneNormal(), transform.position);
+    }
 }
