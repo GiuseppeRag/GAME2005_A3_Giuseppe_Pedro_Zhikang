@@ -47,6 +47,10 @@ public class CustomPhysicsSystem : MonoBehaviour
                 CustomPhysicsObject objectA = objectsList[indexA];
                 CustomPhysicsObject objectB = objectsList[indexB];
 
+                //No need to check collision with itself
+                if (objectA == objectB)
+                    continue;
+
                 switch (objectA.collisionType.GetType())
                 {
                     case TypeEnum.SPHERE:
