@@ -112,11 +112,11 @@ public class OnCollisionHandler : MonoBehaviour
         PlaneCollisionType planeComponent = (PlaneCollisionType)plane.collisionType;
         AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
 
-        Vector3 extents = aabbComponent.GetMaxPoint() - aabb.transform.position;
+        Vector3 halfSize = aabbComponent.GetMaxPoint() - aabb.transform.position;
 
-        float projection = (extents.x * Mathf.Abs(planeComponent.GetPlaneNormal().x)) +
-                           (extents.y * Mathf.Abs(planeComponent.GetPlaneNormal().y)) +
-                           (extents.z * Mathf.Abs(planeComponent.GetPlaneNormal().z));
+        float projection = (halfSize.x * Mathf.Abs(planeComponent.GetPlaneNormal().x)) +
+                           (halfSize.y * Mathf.Abs(planeComponent.GetPlaneNormal().y)) +
+                           (halfSize.z * Mathf.Abs(planeComponent.GetPlaneNormal().z));
 
         float dot = Vector3.Dot(planeComponent.GetPlaneNormal(), aabb.transform.position) + planeComponent.GetConstant();
 
@@ -129,20 +129,49 @@ public class OnCollisionHandler : MonoBehaviour
                                      Mathf.Abs(aabb.velocity.z) * planeComponent.GetPlaneNormal().z);
     }
 
-    // Helper class for AABB - AABB collision to reduce lines of code
-    static bool OnAABB_AABBCollisionHelper(CustomPhysicsObject aabb, Vector3 facePos, Vector3 faceNormal, Vector3 faceConstant)
-    {
-        return false;
-    }
-
     // Handles the AABB - AABB Collision
-
     public static void OnAABB_AABBCollision(CustomPhysicsObject aabb1, CustomPhysicsObject aabb2)
     {
-        float velocityMagnitude = Mathf.Sqrt(Mathf.Pow(aabb1.velocity.x, 2) + Mathf.Pow(aabb1.velocity.y, 2) + Mathf.Pow(aabb1.velocity.z, 2));
-        Vector3 velocityNormal = aabb1.velocity / velocityMagnitude;
+        Vector3 displacement = aabb2.transform.position - aabb1.transform.position;
+        Vector3 halfSizeA = aabb1.transform.localScale * 0.5f;
+        Vector3 halfSizeB = aabb2.transform.localScale * 0.5f;
 
+        float penetrationX = (halfSizeA.x + halfSizeB.x - Mathf.Abs(displacement.x));
+        float penetrationY = (halfSizeA.y + halfSizeB.y - Mathf.Abs(displacement.y));
+        float penetrationZ = (halfSizeA.z + halfSizeB.z - Mathf.Abs(displacement.z));
 
+        Vector3 minimumTranslation;
+        Vector3 collisionNormal;
+        Vector3 contactPoint;
+
+        // is X the smallest penetration value
+        if (penetrationX < penetrationY && penetrationX < penetrationZ)
+        {
+            collisionNormal = new Vector3(Mathf.Sign(displacement.x), 0.0f, 0.0f);
+            minimumTranslation = collisionNormal * penetrationX;
+            aabb1.velocity.x = 0.0f;
+        }
+        //is Y the smallest peneration value
+        else if (penetrationY < penetrationX && penetrationY < penetrationZ)
+        {
+            collisionNormal = new Vector3(0.0f, Mathf.Sign(displacement.y), 0.0f);
+            minimumTranslation = collisionNormal * penetrationY;
+            aabb1.velocity.y = 0.0f;
+        }
+        //otherwise, Z is
+        else
+        {
+            collisionNormal = new Vector3(0.0f, 0.0f, Mathf.Sign(displacement.z));
+            minimumTranslation = collisionNormal * penetrationZ;
+            aabb2.velocity.z = 0.0f;
+        }
+        contactPoint = minimumTranslation + aabb1.transform.position;
+
+        Vector3 translationA = minimumTranslation * -0.5f;
+        Vector3 translationB = minimumTranslation * 0.5f;
+
+        aabb1.transform.position += translationA;
+        aabb2.transform.position += translationB;
     }
 
     //Calls The OnSphere_PlaneCollsion function. Exists to avoid naming problems

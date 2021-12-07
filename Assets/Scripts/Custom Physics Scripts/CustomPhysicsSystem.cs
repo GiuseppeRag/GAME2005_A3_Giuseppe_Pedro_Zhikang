@@ -38,9 +38,11 @@ public class CustomPhysicsSystem : MonoBehaviour
     void UpdateCollision()
     {
         //Multiple loops required since we need to check the collision of different objects in the list with each other
-        for (int indexA = 0; indexA < objectsList.Count - 1; indexA++)
+        //for (int indexA = 0; indexA < objectsList.Count - 1; indexA++)
+        for (int indexA = 0; indexA < objectsList.Count; indexA++)
         {
-            for (int indexB = indexA + 1; indexB < objectsList.Count; indexB++)
+            //for (int indexB = indexA + 1; indexB < objectsList.Count; indexB++)
+            for (int indexB = 0; indexB < objectsList.Count; indexB++)
             {
                 CustomPhysicsObject objectA = objectsList[indexA];
                 CustomPhysicsObject objectB = objectsList[indexB];
