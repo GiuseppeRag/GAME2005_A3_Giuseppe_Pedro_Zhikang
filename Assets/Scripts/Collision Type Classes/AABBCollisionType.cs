@@ -20,6 +20,11 @@ public class AABBCollisionType : CollisionType
         }
     }
 
+    public Vector3 GetSize()
+    {
+        return new Vector3(width, height, length);
+    }
+
     public override TypeEnum GetType()
     {
         return TypeEnum.AABB;

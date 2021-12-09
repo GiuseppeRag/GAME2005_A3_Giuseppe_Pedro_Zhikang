@@ -6,6 +6,7 @@ public class CustomPhysicsObject : MonoBehaviour
 {
     [Header("Properties")]
     public float mass;
+    public float bounciness = 0.5f;
     public bool motionless = false;
     public Vector3 velocity = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;

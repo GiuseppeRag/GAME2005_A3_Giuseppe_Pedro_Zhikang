@@ -4,6 +4,36 @@ using UnityEngine;
 
 public class OnCollisionHandler : MonoBehaviour
 {
+    public static void ApplyKinematicRespose(CustomPhysicsObject Object1, CustomPhysicsObject Object2, Vector3 collisionNormal)
+    {
+        Vector3 relativeVelocity = Object2.velocity - Object1.velocity;
+        float relativeNormalVecocity = Vector3.Dot(relativeVelocity, collisionNormal);
+
+        if (relativeNormalVecocity >= 0.0f)
+        {
+            return; // No bounce
+        }
+
+
+        float restitution = 0.5f * (Object1.bounciness + Object2.bounciness);
+        float changeInVelocity = -relativeNormalVecocity * (1.0f + restitution);
+        float impulse = changeInVelocity;
+        if (!Object1.motionless && Object2.motionless)
+        {
+            Object1.velocity -= collisionNormal * impulse;
+        }
+        else if (Object1.motionless && !Object2.motionless)
+        {
+            Object2.velocity += collisionNormal * impulse;
+        }
+        else
+        {
+            impulse = (changeInVelocity / (1.0f / Object1.mass + 1.0f / Object2.mass));
+            Object1.velocity -= collisionNormal * (impulse / Object1.mass);
+            Object2.velocity += collisionNormal * (impulse / Object2.mass);
+        }
+    }
+
     //Handles the Sphere-Sphere Collision
     public static void OnSphere_SphereCollision(CustomPhysicsObject sphere1, CustomPhysicsObject sphere2)
     {
@@ -27,6 +57,8 @@ public class OnCollisionHandler : MonoBehaviour
 
         sphere1.transform.position += translationA;
         sphere2.transform.position += translationB;
+
+        ApplyKinematicRespose(sphere1, sphere2, collisionNormal);
     }
 
     //Handles the Sphere-Plane Collision
@@ -38,20 +70,6 @@ public class OnCollisionHandler : MonoBehaviour
 
         Vector3 planeNormal = planeCollision.GetPlaneNormal();
 
-        // Stop the velocity on the appropriate axis depending on the plane's normal
-        //Is it a YZ plane?
-        if (planeNormal.x != 0)
-            sphere.velocity.x = 0.0f;
-        //Is it an XY plane?
-        else if (planeNormal.z != 0)
-        {
-            sphere.velocity.z = 0.0f;
-            sphere.SetIsGrounded(true);
-        }
-        //Is it an XZ plane?
-        else
-            sphere.velocity.y = 0.0f;
-
         // Perform the displacement of the sphere so it does not penetrate the plane
         Vector3 displacement = sphere.transform.position - plane.transform.position;
         float dotProduct = Vector3.Dot(planeNormal, displacement);
@@ -59,6 +77,9 @@ public class OnCollisionHandler : MonoBehaviour
         float penetration = sphereCollision.radius - distance;
 
         sphere.transform.position += planeNormal * penetration;
+
+        ApplyKinematicRespose(plane, sphere, planeNormal);
+        //ApplyKinematicRespose(sphere, plane, planeNormal);
     }
 
     // Helper class for Sphere - AABB collision to reduce lines of code
@@ -84,25 +105,49 @@ public class OnCollisionHandler : MonoBehaviour
     // Handles the Sphere - AABB Collision
     public static void OnSphere_AABBCollision(CustomPhysicsObject sphere, CustomPhysicsObject aabb)
     {
+        SphereCollisionType sphereComponent = (SphereCollisionType)sphere.collisionType;
         AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
 
-        Vector3 mid = aabb.transform.position;
+        Vector3 halfSizeB = aabbComponent.GetSize() * 0.5f;
 
-        //VERY DEMANDING IN PROCESSING
-        //Treat each of the faces of the AABB box as a plane, and perfect sphere plane collision multiple times
-        //Each face requires its position and normal to be passed
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y + (aabbComponent.height / 2), mid.z), aabbComponent.GetUpNormal()))
+        Vector3 displacementAB = aabb.transform.position - sphere.transform.position;
+        float distance = displacementAB.magnitude;
+
+        float penetrationX = (sphereComponent.radius + halfSizeB.x - Mathf.Abs(displacementAB.x));
+        float penetrationY = (sphereComponent.radius + halfSizeB.y - Mathf.Abs(displacementAB.y));
+        float penetrationZ = (sphereComponent.radius + halfSizeB.z - Mathf.Abs(displacementAB.z));
+
+
+        if (penetrationX < 0 || penetrationY < 0 || penetrationZ < 0)
+        {
             return;
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x + (aabbComponent.width / 2), mid.y, mid.z), aabbComponent.GetRightNormal()))
-            return;
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y, mid.z + (aabbComponent.length / 2)), aabbComponent.GetFrontNormal()))
-            return;
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y - (aabbComponent.height / 2), mid.z), aabbComponent.GetDownNormal()))
-            return;
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x - (aabbComponent.width / 2), mid.y, mid.z), aabbComponent.GetLeftNormal()))
-            return;
-        if (OnSphere_AABBCollisionHelper(sphere, new Vector3(mid.x, mid.y, mid.z - (aabbComponent.length / 2)), aabbComponent.GetBackNormal()))
-            return;
+        }
+
+        Vector3 collisionNormal = Vector3.zero;
+        Vector3 miniumTranslationVector = Vector3.zero;
+
+        if (penetrationX <= penetrationY && penetrationX <= penetrationZ)
+        {
+            collisionNormal = new Vector3(Mathf.Sign(displacementAB.x), 0.0f, 0.0f);
+            miniumTranslationVector = collisionNormal * -penetrationX;
+        }
+        else if (penetrationY <= penetrationX && penetrationY <= penetrationZ)
+        {
+            collisionNormal = new Vector3(0.0f, Mathf.Sign(displacementAB.y), 0.0f);
+            miniumTranslationVector = collisionNormal * -penetrationY;
+        }
+        else if (penetrationZ <= penetrationY && penetrationZ <= penetrationX)
+        {
+            collisionNormal = new Vector3(0.0f, 0.0f, Mathf.Sign(displacementAB.z));
+            miniumTranslationVector = collisionNormal * -penetrationZ;
+        }
+        if (!sphere.motionless)
+            sphere.transform.position += miniumTranslationVector;
+        if(!aabb.motionless)
+            aabb.transform.position -= miniumTranslationVector;
+
+        //// Apply Kinematic Respose
+        ApplyKinematicRespose(sphere, aabb, collisionNormal);
     }
 
 
@@ -172,6 +217,8 @@ public class OnCollisionHandler : MonoBehaviour
 
         aabb1.transform.position += translationA;
         aabb2.transform.position += translationB;
+
+        ApplyKinematicRespose(aabb1, aabb2, collisionNormal);
     }
 
     //Calls The OnSphere_PlaneCollsion function. Exists to avoid naming problems

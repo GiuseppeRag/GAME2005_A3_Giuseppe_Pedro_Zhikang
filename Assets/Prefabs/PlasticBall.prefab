@@ -97,6 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mass: 1
+  bounciness: 0.5
+  motionless: 0
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
   useSystemGravity: 1
@@ -114,4 +116,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4389f48e2ad23344bd7f45ae39d6bbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoSetRadius: 1
   radius: 1
