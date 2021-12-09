@@ -14,6 +14,12 @@ public class UIController : MonoBehaviour
     [Header("Physics System")]
     public CustomPhysicsSystem customPhysicsSystem;
 
+    [Header("Throw Controller")]
+    public ThrowObjectController throwObjectController;
+
+    //Used to storem items to be delete
+    List<CustomPhysicsObject> tempDeleteList = new List<CustomPhysicsObject>();
+
     //Used for stopping the Y of objects when gravity is disabled
     Vector3 tempYVelocityHolder;
 
@@ -64,6 +70,19 @@ public class UIController : MonoBehaviour
     {
         //Resets the scene
         foreach (CustomPhysicsObject physicsObject in customPhysicsSystem.objectsList)
-            physicsObject.ResetObjectState();
+        {
+            if (physicsObject.CompareTag("DeleteWhenReset"))
+                tempDeleteList.Add(physicsObject);
+            else
+                physicsObject.ResetObjectState();
+        }
+
+        //Delete any object that are tag with DeletWhenReset
+        foreach(CustomPhysicsObject deleteObject in tempDeleteList)
+        {
+            customPhysicsSystem.objectsList.Remove(deleteObject);
+            Destroy(deleteObject.gameObject);
+        }
+        tempDeleteList.Clear();
     }
 }

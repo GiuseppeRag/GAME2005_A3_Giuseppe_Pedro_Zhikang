@@ -5,14 +5,14 @@ using UnityEngine;
 public class ThrowObjectController : MonoBehaviour
 {
     public GameObject SpawnPrefab;
+    public float StartingVelocity = 10;
+    //private List<GameObject> CloneList = new List<GameObject>();
     private Vector3 Dir;
-    private float StartingVel;
 
     // Start is called before the first frame update
     void Start()
     {
         Dir = transform.forward;
-        StartingVel = 100;
     }
 
     // Update is called once per frame
@@ -22,12 +22,10 @@ public class ThrowObjectController : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            Debug.DrawRay(transform.localPosition, Dir, Color.red, 10000);
+            //Debug.DrawRay(transform.localPosition, Dir, Color.red, 10000);
             GameObject temp = Instantiate(SpawnPrefab, transform.localPosition, transform.rotation);
-            temp.GetComponent<CustomPhysicsObject>().velocity = new Vector3 (Dir.x * StartingVel, Dir.y * StartingVel, StartingVel );
-
-            //print("space key was pressed");
-
+            temp.tag = "DeleteWhenReset";
+            temp.GetComponent<CustomPhysicsObject>().velocity = new Vector3 (Dir.x * StartingVelocity, Dir.y * StartingVelocity, StartingVelocity);
         }
     }
 }

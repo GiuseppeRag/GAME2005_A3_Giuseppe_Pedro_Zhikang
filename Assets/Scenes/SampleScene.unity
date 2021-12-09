@@ -1272,7 +1272,7 @@ MonoBehaviour:
   enableCameraLook: 0
   enableCameraMove: 1
   sensitivity: 10
-  maxSpeed: 100
+  maxSpeed: 10
   UIPanel: {fileID: 1902091596}
 --- !u!114 &963194230
 MonoBehaviour:
@@ -1287,6 +1287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpawnPrefab: {fileID: 4505207014353708355, guid: 1bce0304dc9f5ee489d5bc379b8d038c, type: 3}
+  StartingVel: 10
 --- !u!1 &966176353
 GameObject:
   m_ObjectHideFlags: 0
