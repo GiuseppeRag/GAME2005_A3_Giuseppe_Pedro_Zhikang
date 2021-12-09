@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1088,6 +1088,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mass: 0
+  bounciness: 0.5
   motionless: 1
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
@@ -1287,7 +1288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpawnPrefab: {fileID: 4505207014353708355, guid: 1bce0304dc9f5ee489d5bc379b8d038c, type: 3}
-  StartingVel: 10
+  StartingVelocity: 10
 --- !u!1 &966176353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,6 +1416,7 @@ MonoBehaviour:
   resetSceneButton: {fileID: 391663205}
   gravityModifierSlider: {fileID: 1624240996}
   customPhysicsSystem: {fileID: 102886180}
+  throwObjectController: {fileID: 0}
 --- !u!4 &1106442733
 Transform:
   m_ObjectHideFlags: 0
@@ -1553,6 +1555,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 555966928}
     m_Modifications:
+    - target: {fileID: 2967356266548337441, guid: 8a910a84fa1603b41bd29ae2c821fce5, type: 3}
+      propertyPath: bounciness
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 2967356266548337450, guid: 8a910a84fa1603b41bd29ae2c821fce5, type: 3}
       propertyPath: m_Name
       value: Bottle2
@@ -2154,6 +2160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mass: 100
+  bounciness: 0.5
   motionless: 1
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}

@@ -29,8 +29,8 @@ public class OnCollisionHandler : MonoBehaviour
         else
         {
             impulse = (changeInVelocity / (1.0f / Object1.mass + 1.0f / Object2.mass));
-            Object1.velocity -= collisionNormal * impulse;
-            Object2.velocity += collisionNormal * impulse;
+            Object1.velocity -= collisionNormal * (impulse / Object1.mass);
+            Object2.velocity += collisionNormal * (impulse / Object2.mass);
         }
     }
 
