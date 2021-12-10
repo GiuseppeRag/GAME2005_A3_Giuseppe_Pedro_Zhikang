@@ -32,6 +32,38 @@ public class OnCollisionHandler : MonoBehaviour
             Object1.velocity -= collisionNormal * (impulse / Object1.mass);
             Object2.velocity += collisionNormal * (impulse / Object2.mass);
         }
+
+        Vector3 relativeSurfaceVelocity = relativeVelocity - (relativeNormalVecocity * collisionNormal);
+        ApplyFriction(Object1, Object2, relativeSurfaceVelocity, collisionNormal);
+    }
+
+    public static void ApplyFriction(CustomPhysicsObject Obj1, CustomPhysicsObject Obj2, Vector3 relativeSurfaceVelocity1to2, Vector3 normal1to2)
+    {
+        float gravity = FindObjectOfType<CustomPhysicsSystem>().gravity;
+        Vector3 grav = new Vector3(0.0f, gravity, 0.0f);
+        float minFrictionSpeed = 0.001f;
+        float relativeSpeed = relativeSurfaceVelocity1to2.magnitude;
+
+        if (relativeSpeed < minFrictionSpeed)
+            return;
+
+        float kFrictionCoefficient = (Obj1.frictioniness + Obj2.frictioniness) * 0.5f;
+
+        Vector3 directionToApplyFriction = relativeSurfaceVelocity1to2 / relativeSpeed;
+        float gravityAccelerationAlongNormal = Vector3.Dot(grav, normal1to2);
+
+        Vector3 frictionAcceleration = directionToApplyFriction * -gravityAccelerationAlongNormal * kFrictionCoefficient;
+
+        if(!Obj1.motionless)
+        {
+            Obj1.velocity -= frictionAcceleration * Time.fixedDeltaTime;
+        }
+        if(!Obj2.motionless)
+        {
+            Obj2.velocity += frictionAcceleration * Time.fixedDeltaTime;
+        }
+        
+
     }
 
     //Handles the Sphere-Sphere Collision
