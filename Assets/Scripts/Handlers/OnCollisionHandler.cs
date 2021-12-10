@@ -41,10 +41,10 @@ public class OnCollisionHandler : MonoBehaviour
     {
         float gravity = FindObjectOfType<CustomPhysicsSystem>().gravity;
         Vector3 grav = new Vector3(0.0f, gravity, 0.0f);
-        float minFrictionSpeed = 0.001f;
+        float minFrictionSpeed = 0.0001f;
         float relativeSpeed = relativeSurfaceVelocity1to2.magnitude;
 
-        if (relativeSpeed < minFrictionSpeed)
+        if (relativeSpeed <= minFrictionSpeed)
             return;
 
         float kFrictionCoefficient = (Obj1.frictioniness + Obj2.frictioniness) * 0.5f;
@@ -60,9 +60,9 @@ public class OnCollisionHandler : MonoBehaviour
         }
         if(!Obj2.motionless)
         {
-            Obj2.velocity += frictionAcceleration * Time.fixedDeltaTime;
+            Obj2.velocity += frictionAcceleration * Time.fixedDeltaTime * 5;
         }
-        
+      
 
     }
 
@@ -226,21 +226,18 @@ public class OnCollisionHandler : MonoBehaviour
         {
             collisionNormal = new Vector3(Mathf.Sign(displacement.x), 0.0f, 0.0f);
             minimumTranslation = collisionNormal * penetrationX;
-            aabb1.velocity.x = 0.0f;
         }
         //is Y the smallest peneration value
         else if (penetrationY < penetrationX && penetrationY < penetrationZ)
         {
             collisionNormal = new Vector3(0.0f, Mathf.Sign(displacement.y), 0.0f);
             minimumTranslation = collisionNormal * penetrationY;
-            aabb1.velocity.y = 0.0f;
         }
         //otherwise, Z is
         else
         {
             collisionNormal = new Vector3(0.0f, 0.0f, Mathf.Sign(displacement.z));
             minimumTranslation = collisionNormal * penetrationZ;
-            aabb2.velocity.z = 0.0f;
         }
         contactPoint = minimumTranslation + aabb1.transform.position;
 
