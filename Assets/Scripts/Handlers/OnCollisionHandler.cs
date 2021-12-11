@@ -14,7 +14,6 @@ public class OnCollisionHandler : MonoBehaviour
             return; // No bounce
         }
 
-
         float restitution = 0.5f * (Object1.bounciness + Object2.bounciness);
         float changeInVelocity = -relativeNormalVecocity * (1.0f + restitution);
         float impulse = changeInVelocity;
@@ -41,13 +40,18 @@ public class OnCollisionHandler : MonoBehaviour
     {
         float gravity = FindObjectOfType<CustomPhysicsSystem>().gravity;
         Vector3 grav = new Vector3(0.0f, gravity, 0.0f);
-        float minFrictionSpeed = 0.0001f;
+        float minFrictionSpeed = 0.025f;
         float relativeSpeed = relativeSurfaceVelocity1to2.magnitude;
 
-        if (relativeSpeed <= minFrictionSpeed)
+        // Velocity is so slow that friction should stop it completely (hence velocity at 0)
+        if (Mathf.Abs(relativeSpeed) <= minFrictionSpeed)
+        {
+            Obj1.velocity.x = 0.0f;
+            Obj1.velocity.z = 0.0f;
             return;
+        }
 
-        float kFrictionCoefficient = (Obj1.frictioniness + Obj2.frictioniness) * 0.5f;
+        float kFrictionCoefficient = FrictionCoefficient.GetKineticCoefficient(Obj1.material, Obj2.material);
 
         Vector3 directionToApplyFriction = relativeSurfaceVelocity1to2 / relativeSpeed;
         float gravityAccelerationAlongNormal = Vector3.Dot(grav, normal1to2);
@@ -60,7 +64,7 @@ public class OnCollisionHandler : MonoBehaviour
         }
         if(!Obj2.motionless)
         {
-            Obj2.velocity += frictionAcceleration * Time.fixedDeltaTime * 5;
+            Obj2.velocity += frictionAcceleration * Time.fixedDeltaTime;
         }
       
 
@@ -110,28 +114,8 @@ public class OnCollisionHandler : MonoBehaviour
 
         sphere.transform.position += planeNormal * penetration;
 
-        ApplyKinematicRespose(plane, sphere, planeNormal);
-        //ApplyKinematicRespose(sphere, plane, planeNormal);
-    }
-
-    // Helper class for Sphere - AABB collision to reduce lines of code
-    static bool OnSphere_AABBCollisionHelper(CustomPhysicsObject sphere, Vector3 facePos, Vector3 faceNormal)
-    {
-        SphereCollisionType sphereComponent = (SphereCollisionType)sphere.collisionType;
-
-        // Same code as Sphere-Plane collision checking, only this time we have a response
-        Vector3 distanceVec = sphere.transform.position - facePos;
-        float distance = Mathf.Abs(Vector3.Dot(distanceVec, faceNormal));
-        float penetration = sphereComponent.radius - distance;
-
-        //If there's a penetration depth, we move the sphere away from that face and stop its velocity
-        if (penetration > 0)
-        {
-            sphere.transform.position += penetration * faceNormal;
-            sphere.velocity += new Vector3(Mathf.Abs(sphere.velocity.x) * faceNormal.x, Mathf.Abs(sphere.velocity.y) * faceNormal.y, Mathf.Abs(sphere.velocity.z) * faceNormal.z);
-            return true;
-        }
-        return false;
+        //Apply momentum (The plane does not move, so we need to pass the plane normal relative to the sphere since that is the collision normal)
+        ApplyKinematicRespose(sphere, plane, -planeNormal);
     }
 
     // Handles the Sphere - AABB Collision
@@ -176,7 +160,7 @@ public class OnCollisionHandler : MonoBehaviour
         if (!sphere.motionless)
             sphere.transform.position += miniumTranslationVector;
         if(!aabb.motionless)
-            aabb.transform.position -= miniumTranslationVector;
+            aabb.transform.position -= miniumTranslationVector;;
 
         //// Apply Kinematic Respose
         ApplyKinematicRespose(sphere, aabb, collisionNormal);
@@ -201,9 +185,9 @@ public class OnCollisionHandler : MonoBehaviour
 
         //Update the AABB's position and velocity
         aabb.transform.position -= penetration * planeComponent.GetPlaneNormal();
-        aabb.velocity += new Vector3(Mathf.Abs(aabb.velocity.x) * planeComponent.GetPlaneNormal().x, 
-                                     Mathf.Abs(aabb.velocity.y) * planeComponent.GetPlaneNormal().y, 
-                                     Mathf.Abs(aabb.velocity.z) * planeComponent.GetPlaneNormal().z);
+
+        // Applies Momentum (plane is not moving, so the collision normal is relative to the AABB box)
+        ApplyKinematicRespose(aabb, plane, -planeComponent.GetPlaneNormal());
     }
 
     // Handles the AABB - AABB Collision
@@ -244,8 +228,10 @@ public class OnCollisionHandler : MonoBehaviour
         Vector3 translationA = minimumTranslation * -0.5f;
         Vector3 translationB = minimumTranslation * 0.5f;
 
-        aabb1.transform.position += translationA;
-        aabb2.transform.position += translationB;
+        if (!aabb1.motionless)
+            aabb1.transform.position += translationA;
+        if (!aabb2.motionless)
+            aabb2.transform.position += translationB;
 
         ApplyKinematicRespose(aabb1, aabb2, collisionNormal);
     }

@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3876968378240804629}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.21, y: 29.73, z: -15.61}
-  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e01fcc116dd1a34439b27fdf324c248f, type: 2}
+  - {fileID: 2100000, guid: 11a01319fcda45647ad0d0617429243c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -96,14 +96,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 821484db16d3ff84686bf3724bb75c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 5
+  mass: 0.625
   bounciness: 0.75
-  frictioniness: 0.9
+  material: 2
   motionless: 0
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
   useSystemGravity: 1
-  autoDetermineMass: 0
   collisionType: {fileID: 3876968378240804630}
 --- !u!114 &3876968378240804630
 MonoBehaviour:

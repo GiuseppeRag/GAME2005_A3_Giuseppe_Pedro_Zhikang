@@ -25,7 +25,7 @@ public class ThrowObjectController : MonoBehaviour
             //Debug.DrawRay(transform.localPosition, Dir, Color.red, 10000);
             GameObject temp = Instantiate(SpawnPrefab, transform.localPosition, transform.rotation);
             temp.tag = "DeleteWhenReset";
-            temp.GetComponent<CustomPhysicsObject>().velocity = new Vector3 (Dir.x * StartingVelocity, Dir.y * StartingVelocity, StartingVelocity);
+            temp.GetComponent<CustomPhysicsObject>().velocity = new Vector3 (Dir.x * StartingVelocity, Dir.y * StartingVelocity,  Dir.z * StartingVelocity);
         }
     }
 }

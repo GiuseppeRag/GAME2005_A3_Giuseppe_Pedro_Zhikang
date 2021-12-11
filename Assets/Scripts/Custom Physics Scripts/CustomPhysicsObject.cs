@@ -7,12 +7,13 @@ public class CustomPhysicsObject : MonoBehaviour
     [Header("Properties")]
     public float mass;
     public float bounciness = 0.5f;
-    public float frictioniness = 0.5f;
+    public Material material;
+
+    [Header("Movement")]
     public bool motionless = false;
     public Vector3 velocity = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
     public bool useSystemGravity = true;
-    public bool autoDetermineMass = false;
 
     [Header("Collision")]
     public CollisionType collisionType;
@@ -37,19 +38,6 @@ public class CustomPhysicsObject : MonoBehaviour
         initialPosition = transform.position;
         initialVelocity = velocity;
         initialAcceleration = acceleration;
-
-        //No use right now, perhaps later
-        if (autoDetermineMass)
-        {
-            switch (collisionType.GetType())
-            {
-                case TypeEnum.SPHERE:
-                    SphereCollisionType sphere = (SphereCollisionType)collisionType;
-
-                    mass = (float)((4 / 3) * 3.14 * Mathf.Pow(sphere.radius, 3));
-                    break;
-            }
-        }
     }
 
     //Use System Gravity Flag
