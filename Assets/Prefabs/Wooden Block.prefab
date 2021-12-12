@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 821484db16d3ff84686bf3724bb75c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 0.1
+  mass: 0.35
   bounciness: 0.2
   material: 4
   motionless: 0
@@ -104,6 +104,7 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   useSystemGravity: 1
   collisionType: {fileID: 2967356266548337454}
+  groundObject: {fileID: 0}
 --- !u!114 &2967356266548337454
 MonoBehaviour:
   m_ObjectHideFlags: 0

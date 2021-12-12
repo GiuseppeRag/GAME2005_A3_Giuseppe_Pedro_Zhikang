@@ -22,7 +22,6 @@ public class ThrowObjectController : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            //Debug.DrawRay(transform.localPosition, Dir, Color.red, 10000);
             GameObject temp = Instantiate(SpawnPrefab, transform.localPosition, transform.rotation);
             temp.tag = "DeleteWhenReset";
             temp.GetComponent<CustomPhysicsObject>().velocity = new Vector3 (Dir.x * StartingVelocity, Dir.y * StartingVelocity,  Dir.z * StartingVelocity);

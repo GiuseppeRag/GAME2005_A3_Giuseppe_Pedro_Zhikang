@@ -10,14 +10,18 @@ public class UIController : MonoBehaviour
     public Toggle enableGravity;
     public Button resetSceneButton;
     public Slider gravityModifierSlider;
+    public Slider VelocityModifierSlider;
+    public Text BallVelocityIndicator;
+    public Dropdown BallSelection;
 
     [Header("Physics System")]
     public CustomPhysicsSystem customPhysicsSystem;
 
     [Header("Throw Controller")]
+    public List<GameObject> Prefabs;
     public ThrowObjectController throwObjectController;
 
-    //Used to storem items to be delete
+    //Used to store items to be delete
     List<CustomPhysicsObject> tempDeleteList = new List<CustomPhysicsObject>();
 
     //Used for stopping the Y of objects when gravity is disabled
@@ -31,6 +35,13 @@ public class UIController : MonoBehaviour
 
         //sets the gravity slider to match the system's gravity
         gravityModifierSlider.value = -customPhysicsSystem.gravity;
+
+
+        throwObjectController.StartingVelocity = VelocityModifierSlider.value;
+        BallVelocityIndicator.text = VelocityModifierSlider.value.ToString();
+
+        if (BallSelection.value <= Prefabs.Count)
+            throwObjectController.SpawnPrefab = Prefabs[BallSelection.value];
     }
 
     // Update is called once per frame
@@ -66,6 +77,17 @@ public class UIController : MonoBehaviour
         customPhysicsSystem.gravity = -gravityModifierSlider.value;
     }
 
+    public void OnBallVelocityModified()
+    {
+        throwObjectController.StartingVelocity = VelocityModifierSlider.value;
+        BallVelocityIndicator.text = VelocityModifierSlider.value.ToString();
+    }
+
+    public void OnBallChange()
+    {
+        if(BallSelection.value <= Prefabs.Count)
+            throwObjectController.SpawnPrefab = Prefabs[BallSelection.value];
+    }
     public void OnResetSceneButtonPressed()
     {
         //Resets the scene

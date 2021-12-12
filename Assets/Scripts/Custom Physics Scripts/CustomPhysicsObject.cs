@@ -28,6 +28,9 @@ public class CustomPhysicsObject : MonoBehaviour
     //A placeholder for the Y velocity when gravity is disabled
     float tempYVelocityHolder;
 
+    //Used for friction
+    public CustomPhysicsObject groundObject;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -68,6 +71,16 @@ public class CustomPhysicsObject : MonoBehaviour
     public void SetIsGrounded(bool grounded)
     {
         isGrounded = grounded;
+    }
+
+    public CustomPhysicsObject GetGroundObject()
+    {
+        return groundObject;
+    }
+
+    public void SetGroundObject(CustomPhysicsObject gObject)
+    {
+        groundObject = gObject;
     }
 
     //Toggles Y movement and sets it back once enabled again
