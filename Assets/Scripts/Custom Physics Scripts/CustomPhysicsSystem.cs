@@ -69,9 +69,11 @@ public class CustomPhysicsSystem : MonoBehaviour
                             case TypeEnum.PLANE:
                                 SphereCollisionType sphere = (SphereCollisionType)objectA.collisionType;
                                 PlaneCollisionType plane = (PlaneCollisionType)objectB.collisionType;
-                              
+
                                 if (CollisionCheckHandler.Sphere_PlaneCollision(sphere, plane))
                                     OnCollisionHandler.OnSphere_PlaneCollision(objectA, objectB);
+                                else if (objectA.GetGroundObject() == objectB)
+                                   objectA.SetGroundObject(null);
                                 break;
 
                             //Handle Sphere-AABB Collision
@@ -81,6 +83,8 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.Sphere_AABBCollision(sphere3, aabb))
                                     OnCollisionHandler.OnSphere_AABBCollision(objectA, objectB);
+                                else if (objectA.GetGroundObject() == objectB)
+                                    objectA.SetGroundObject(null);
                                 break;
                         }
                         break;
@@ -125,6 +129,8 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.AABB_PlaneCollision(aabb1, plane))
                                     OnCollisionHandler.OnAABB_PlaneCollision(objectA, objectB);
+                                else if (objectA.GetGroundObject() == objectB)
+                                    objectA.SetGroundObject(null);
                                 break;
 
                             //Handle AABB-AABB Collision
@@ -134,6 +140,8 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.AABB_AABBCollision(aabb2, aabb3))
                                     OnCollisionHandler.OnAABB_AABBCollision(objectA, objectB);
+                                else if (objectA.GetGroundObject() == objectB)
+                                    objectA.SetGroundObject(null);
                                 break;
                         }
                         break;

@@ -7,11 +7,13 @@ public class CustomPhysicsObject : MonoBehaviour
     [Header("Properties")]
     public float mass;
     public float bounciness = 0.5f;
+    public Material material;
+
+    [Header("Movement")]
     public bool motionless = false;
     public Vector3 velocity = Vector3.zero;
     public Vector3 acceleration = Vector3.zero;
     public bool useSystemGravity = true;
-    public bool autoDetermineMass = false;
 
     [Header("Collision")]
     public CollisionType collisionType;
@@ -26,6 +28,9 @@ public class CustomPhysicsObject : MonoBehaviour
     //A placeholder for the Y velocity when gravity is disabled
     float tempYVelocityHolder;
 
+    //Used for friction
+    public CustomPhysicsObject groundObject;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,19 +41,6 @@ public class CustomPhysicsObject : MonoBehaviour
         initialPosition = transform.position;
         initialVelocity = velocity;
         initialAcceleration = acceleration;
-
-        //No use right now, perhaps later
-        if (autoDetermineMass)
-        {
-            switch (collisionType.GetType())
-            {
-                case TypeEnum.SPHERE:
-                    SphereCollisionType sphere = (SphereCollisionType)collisionType;
-
-                    mass = (float)((4 / 3) * 3.14 * Mathf.Pow(sphere.radius, 3));
-                    break;
-            }
-        }
     }
 
     //Use System Gravity Flag
@@ -79,6 +71,16 @@ public class CustomPhysicsObject : MonoBehaviour
     public void SetIsGrounded(bool grounded)
     {
         isGrounded = grounded;
+    }
+
+    public CustomPhysicsObject GetGroundObject()
+    {
+        return groundObject;
+    }
+
+    public void SetGroundObject(CustomPhysicsObject gObject)
+    {
+        groundObject = gObject;
     }
 
     //Toggles Y movement and sets it back once enabled again
