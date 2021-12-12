@@ -1823,7 +1823,6 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   useSystemGravity: 0
   collisionType: {fileID: 914371663}
-  groundObject: {fileID: 0}
 --- !u!23 &914371660
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3631,7 +3630,6 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   useSystemGravity: 0
   collisionType: {fileID: 1969861872}
-  groundObject: {fileID: 0}
 --- !u!23 &1969861874
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -18,7 +18,6 @@ public class CustomPhysicsObject : MonoBehaviour
     [Header("Collision")]
     public CollisionType collisionType;
     bool hasCollision = false;
-    bool isGrounded = false;
 
     // Are used for resetting the scene
     Vector3 initialPosition;
@@ -29,7 +28,7 @@ public class CustomPhysicsObject : MonoBehaviour
     float tempYVelocityHolder;
 
     //Used for friction
-    public CustomPhysicsObject groundObject;
+    CustomPhysicsObject groundObject;
 
     // Start is called before the first frame update
     void Start()
@@ -61,23 +60,14 @@ public class CustomPhysicsObject : MonoBehaviour
         hasCollision = flag;
     }
 
-    //Is Grounded Flag
-    public bool IsGrounded()
-    {
-        return isGrounded;
-    }
 
-    //Set Is Grounded Flag
-    public void SetIsGrounded(bool grounded)
-    {
-        isGrounded = grounded;
-    }
-
+    // Get the ground object of this current physics object
     public CustomPhysicsObject GetGroundObject()
     {
         return groundObject;
     }
 
+    // Set the ground object of this current physics object
     public void SetGroundObject(CustomPhysicsObject gObject)
     {
         groundObject = gObject;

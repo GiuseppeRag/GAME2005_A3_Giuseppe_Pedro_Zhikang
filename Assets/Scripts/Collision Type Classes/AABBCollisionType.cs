@@ -20,6 +20,7 @@ public class AABBCollisionType : CollisionType
         }
     }
 
+    // Get the dimensions of the AABB box
     public Vector3 GetSize()
     {
         return new Vector3(width, height, length);
@@ -30,44 +31,15 @@ public class AABBCollisionType : CollisionType
         return TypeEnum.AABB;
     }
 
+    // Get the vertex on the AABB box with the lowest values
     public Vector3 GetMinPoint()
     {
         return new Vector3(transform.position.x - (width / 2), transform.position.y - (height / 2), transform.position.z - (length / 2));
     }
 
+    // Get the vertex on the AABB box with the highest values
     public Vector3 GetMaxPoint()
     {
         return new Vector3(transform.position.x + (width / 2), transform.position.y + (height / 2), transform.position.z + (length / 2));
     }
-
-    public Vector3 GetUpNormal()
-    {
-        return transform.up;
-    }
-
-    public Vector3 GetRightNormal()
-    {
-        return transform.right;
-    }
-
-    public Vector3 GetFrontNormal()
-    {
-        return transform.forward;
-    }
-
-    public Vector3 GetDownNormal()
-    {
-        return new Vector3(transform.up.x * -1, transform.up.y * -1, transform.up.z * -1);
-    }
-
-    public Vector3 GetLeftNormal()
-    {
-        return new Vector3(transform.right.x * -1, transform.right.y * -1, transform.right.z * -1);
-    }
-
-    public Vector3 GetBackNormal()
-    {
-        return new Vector3(transform.forward.x * -1, transform.forward.y * -1, transform.forward.z * -1);
-    }
-
 }

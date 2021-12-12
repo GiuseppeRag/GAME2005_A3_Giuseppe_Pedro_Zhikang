@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OnCollisionHandler : MonoBehaviour
 {
+    // Used to apply momentum between 2 objects
     public static void ApplyKinematicRespose(CustomPhysicsObject Object1, CustomPhysicsObject Object2, Vector3 collisionNormal, bool frictionBroken)
     {
         // Get the velocity relative to object 2
@@ -19,14 +20,17 @@ public class OnCollisionHandler : MonoBehaviour
         float impulse = changeInVelocity;
 
         // adjust the velocities of the objects depending on whether the the object in question can actually move
+        // Is Object 2 motionless OR friction is too powerful to move it?
         if (!Object1.motionless && (Object2.motionless || !frictionBroken))
         {
             Object1.velocity -= collisionNormal * impulse;
         }
+        // Is object 1 motionless
         else if (Object1.motionless && !Object2.motionless)
         {
             Object2.velocity += collisionNormal * impulse;
         }
+        // both objects are moveable. Adjust the impulse based on their masses and apply individual momentum to each
         else
         {
             impulse = (changeInVelocity / (1.0f / Object1.mass + 1.0f / Object2.mass));
@@ -41,6 +45,7 @@ public class OnCollisionHandler : MonoBehaviour
             ApplyFriction(Object1, Object2, relativeSurfaceVelocity, collisionNormal);
     }
 
+    // Used to apply friction between 2 objects
     public static void ApplyFriction(CustomPhysicsObject Obj1, CustomPhysicsObject Obj2, Vector3 relativeSurfaceVelocity1to2, Vector3 normal1to2)
     {
         float gravity = FindObjectOfType<CustomPhysicsSystem>().gravity;
@@ -56,9 +61,11 @@ public class OnCollisionHandler : MonoBehaviour
             return;
         }
 
+        // determine the frictional acceleration being applied based on the collision normal between the 2 objects
         Vector3 directionToApplyFriction = relativeSurfaceVelocity1to2 / relativeSpeed;
         float gravityAccelerationAlongNormal = Vector3.Dot(grav, normal1to2);
 
+        // Only apply the frictional acceleration if object 1 is not motionless AND has a ground object
         if (Obj1.GetGroundObject() != null && !Obj1.motionless)
         {
             float kFrictionCoefficientA = FrictionCoefficient.GetKineticCoefficient(Obj1.material, Obj1.GetGroundObject().material);
@@ -66,6 +73,7 @@ public class OnCollisionHandler : MonoBehaviour
             Obj1.velocity -= frictionAccelerationA * Time.fixedDeltaTime;
         }
 
+        // Only apply the frictional acceleration if object 2 is not motionless AND has a ground object
         if (Obj2.GetGroundObject() != null && !Obj2.motionless)
         {
             float kFrictionCoefficientB = FrictionCoefficient.GetKineticCoefficient(Obj2.material, Obj2.GetGroundObject().material);
@@ -74,6 +82,7 @@ public class OnCollisionHandler : MonoBehaviour
         }
     }
 
+    // A check used to see if an object at rest has its friction broken open collision. 
     public static bool StaticFrictionBroken(CustomPhysicsObject ObjectA, CustomPhysicsObject ObjectB, Vector3 collisionNormal)
     {
         // There is no static friction if the object has no ground or if the object is already moving
@@ -84,23 +93,25 @@ public class OnCollisionHandler : MonoBehaviour
             if (ObjectB.motionless)
                 return false;
 
-            //Determine Impulse
+            //Determine Impulse Force applied between the 2 objects
             Vector3 relativeVelocity = ObjectB.velocity - ObjectA.velocity;
             float relativeNormalVecocity = Vector3.Dot(relativeVelocity, collisionNormal);
 
             float restitution = 0.5f * (ObjectA.bounciness + ObjectB.bounciness);
             float impulse = -relativeNormalVecocity * (1.0f + restitution) * ObjectA.mass;
 
-            //Determine static friction (Done here because there should be no momentum transfer on a motionless object)
+            //Determine static friction between the object at rest and its ground
             float gravity = FindObjectOfType<CustomPhysicsSystem>().gravity;
             float staticCoefficient = FrictionCoefficient.GetStaticCoefficient(ObjectB.material, ObjectB.GetGroundObject().material);
 
             float staticFrictionForce = Mathf.Abs(staticCoefficient * ObjectB.mass * gravity);
             float collisionForce = impulse / Time.deltaTime;
 
+            // Only if the impulse force is greater than the force of friction does the restless object have movement
             return (collisionForce >= staticFrictionForce);
         }
         else
+            //default cause if static friction does not apply
             return true;
     }
 
@@ -128,6 +139,7 @@ public class OnCollisionHandler : MonoBehaviour
         sphere1.transform.position += translationA;
         sphere2.transform.position += translationB;
 
+        // Applies momentum to the spheres. no need to check for static friction due to the non-flat nature of spheres
         ApplyKinematicRespose(sphere1, sphere2, collisionNormal, true);
     }
 
@@ -148,6 +160,7 @@ public class OnCollisionHandler : MonoBehaviour
 
         sphere.transform.position += planeNormal * penetration;
 
+        // If the plane is collided with is a ground plane, set the plane as the sphere's current ground object
         if (planeNormal.y == 1.0f)
             sphere.SetGroundObject(plane);
 
@@ -161,15 +174,16 @@ public class OnCollisionHandler : MonoBehaviour
         SphereCollisionType sphereComponent = (SphereCollisionType)sphere.collisionType;
         AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
 
+        // get the 'extends' (how far out it reaches from the center) of the bounding box
         Vector3 halfSizeB = aabbComponent.GetSize() * 0.5f;
 
+        // determine the penetration between each of the axis
         Vector3 displacementAB = aabb.transform.position - sphere.transform.position;
         float distance = displacementAB.magnitude;
 
         float penetrationX = (sphereComponent.radius + halfSizeB.x - Mathf.Abs(displacementAB.x));
         float penetrationY = (sphereComponent.radius + halfSizeB.y - Mathf.Abs(displacementAB.y));
         float penetrationZ = (sphereComponent.radius + halfSizeB.z - Mathf.Abs(displacementAB.z));
-
 
         if (penetrationX < 0 || penetrationY < 0 || penetrationZ < 0)
         {
@@ -179,6 +193,7 @@ public class OnCollisionHandler : MonoBehaviour
         Vector3 collisionNormal = Vector3.zero;
         Vector3 miniumTranslationVector = Vector3.zero;
 
+        // Find the lowest penetration depth between the sphere and the bounding box, and prepare the normals to move in that direction
         if (penetrationX <= penetrationY && penetrationX <= penetrationZ)
         {
             collisionNormal = new Vector3(Mathf.Sign(displacementAB.x), 0.0f, 0.0f);
@@ -198,17 +213,22 @@ public class OnCollisionHandler : MonoBehaviour
         //Determine if friction was broken when the two objects collided
         bool frictionBroken = StaticFrictionBroken(sphere, aabb, collisionNormal);
 
+        //Is the bounding box motionless OR failed to have its static friction broken?
         if (!sphere.motionless && (aabb.motionless || !frictionBroken))
             sphere.transform.position += miniumTranslationVector * 2;
+        //Is the sphere motionless?
+        else if (sphere.motionless)
+            aabb.transform.position -= miniumTranslationVector * 2;
+        //Both objects can move, adjust their translation vectors
         else
         {
             sphere.transform.position += miniumTranslationVector;
             aabb.transform.position -= miniumTranslationVector;
         }
 
+        // if the collision normal was a flat ground (or face), set the aabb as the sphere's ground object
         if (collisionNormal.y == -1.0f)
             sphere.SetGroundObject(aabb);
-  
 
         //// Apply Kinematic Respose
         ApplyKinematicRespose(sphere, aabb, collisionNormal, frictionBroken);
@@ -221,8 +241,10 @@ public class OnCollisionHandler : MonoBehaviour
         PlaneCollisionType planeComponent = (PlaneCollisionType)plane.collisionType;
         AABBCollisionType aabbComponent = (AABBCollisionType)aabb.collisionType;
 
+        // get the 'extends' (how far out it reaches from the center) of the bounding box
         Vector3 halfSize = aabbComponent.GetMaxPoint() - aabb.transform.position;
 
+        // Get the projection distance between the bounding box and the plain
         float projection = (halfSize.x * Mathf.Abs(planeComponent.GetPlaneNormal().x)) +
                            (halfSize.y * Mathf.Abs(planeComponent.GetPlaneNormal().y)) +
                            (halfSize.z * Mathf.Abs(planeComponent.GetPlaneNormal().z));
@@ -234,6 +256,7 @@ public class OnCollisionHandler : MonoBehaviour
         //Update the AABB's position and velocity
         aabb.transform.position -= penetration * planeComponent.GetPlaneNormal();
 
+        // If the plane it collided with was a ground plane, set that plane as the AABB's ground object
         if (planeComponent.GetPlaneNormal().y == 1.0f)
             aabb.SetGroundObject(plane);
 
@@ -244,6 +267,7 @@ public class OnCollisionHandler : MonoBehaviour
     // Handles the AABB - AABB Collision
     public static void OnAABB_AABBCollision(CustomPhysicsObject aabb1, CustomPhysicsObject aabb2)
     {
+        // Get the depth of penetration between the 2 Bounding boxes between all axis
         Vector3 displacement = aabb2.transform.position - aabb1.transform.position;
         Vector3 halfSizeA = aabb1.transform.localScale * 0.5f;
         Vector3 halfSizeB = aabb2.transform.localScale * 0.5f;
@@ -279,20 +303,25 @@ public class OnCollisionHandler : MonoBehaviour
         Vector3 translationA = minimumTranslation * -0.5f;
         Vector3 translationB = minimumTranslation * 0.5f;
 
+        // check for static friction on the 2 bounding boxes
         bool frictionBroken = StaticFrictionBroken(aabb1, aabb2, collisionNormal);
 
+        // Is the first bounding box not motionless?
         if (!aabb1.motionless)
             aabb1.transform.position += translationA;
+        //Is the second bounding box not motionless AND had static friction broken (if any)
         if (!aabb2.motionless && frictionBroken)
             aabb2.transform.position += translationB;
 
+        // if the collision normal was a flat ground, set the second AABB as the first AABB's ground object
         if (collisionNormal.y == -1.0f)
             aabb1.SetGroundObject(aabb2);
 
+        // Apply momentum + friction
         ApplyKinematicRespose(aabb1, aabb2, collisionNormal, frictionBroken);
     }
 
-    //Calls The OnSphere_PlaneCollsion function. Exists to avoid naming problems
+    // These functions exist to avoid any naming discrepencies
     public static void OnPlane_SphereCollision(CustomPhysicsObject plane, CustomPhysicsObject sphere) { OnSphere_PlaneCollision(sphere, plane); }
 
     public static void OnAABB_SphereCollision(CustomPhysicsObject aabb, CustomPhysicsObject sphere) { OnSphere_AABBCollision(sphere, aabb); }

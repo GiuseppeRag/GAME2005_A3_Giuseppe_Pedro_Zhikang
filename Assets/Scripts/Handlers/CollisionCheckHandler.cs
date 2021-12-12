@@ -102,6 +102,8 @@ public class CollisionCheckHandler : MonoBehaviour
     // Used for collision checking between 2 AABB objects
     public static bool AABB_AABBCollision(AABBCollisionType aabb1, AABBCollisionType aabb2)
     {
+        // Long check, but to summarize: we are checking if one of the bounding boxes min or max points have enter the range of max/min points
+        //    of the other bounding box. If that point is within the range, there's a collision
         return ((aabb1.GetMinPoint().x <= aabb2.GetMaxPoint().x && aabb1.GetMaxPoint().x >= aabb2.GetMinPoint().x) &&
                 (aabb1.GetMinPoint().y <= aabb2.GetMaxPoint().y && aabb1.GetMaxPoint().y >= aabb2.GetMinPoint().y) &&
                 (aabb1.GetMinPoint().z <= aabb2.GetMaxPoint().z && aabb1.GetMaxPoint().z >= aabb2.GetMinPoint().z));

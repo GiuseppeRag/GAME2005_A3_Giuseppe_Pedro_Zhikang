@@ -77,12 +77,14 @@ public class UIController : MonoBehaviour
         customPhysicsSystem.gravity = -gravityModifierSlider.value;
     }
 
+    // adjusts the throwing velocity of the ball based on the scale
     public void OnBallVelocityModified()
     {
         throwObjectController.StartingVelocity = VelocityModifierSlider.value;
         BallVelocityIndicator.text = VelocityModifierSlider.value.ToString();
     }
 
+    // Changes the ball when the UI selector is changed
     public void OnBallChange()
     {
         if(BallSelection.value <= Prefabs.Count)
@@ -99,7 +101,7 @@ public class UIController : MonoBehaviour
                 physicsObject.ResetObjectState();
         }
 
-        //Delete any object that are tag with DeletWhenReset
+        //Delete any object that are tag with DeletWhenReset (Helps with performance and cleanup)
         foreach(CustomPhysicsObject deleteObject in tempDeleteList)
         {
             customPhysicsSystem.objectsList.Remove(deleteObject);

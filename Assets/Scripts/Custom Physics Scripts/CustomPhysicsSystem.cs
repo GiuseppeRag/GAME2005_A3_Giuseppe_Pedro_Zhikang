@@ -38,10 +38,8 @@ public class CustomPhysicsSystem : MonoBehaviour
     void UpdateCollision()
     {
         //Multiple loops required since we need to check the collision of different objects in the list with each other
-        //for (int indexA = 0; indexA < objectsList.Count - 1; indexA++)
         for (int indexA = 0; indexA < objectsList.Count; indexA++)
         {
-            //for (int indexB = indexA + 1; indexB < objectsList.Count; indexB++)
             for (int indexB = 0; indexB < objectsList.Count; indexB++)
             {
                 CustomPhysicsObject objectA = objectsList[indexA];
@@ -72,6 +70,7 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.Sphere_PlaneCollision(sphere, plane))
                                     OnCollisionHandler.OnSphere_PlaneCollision(objectA, objectB);
+                                //if no longer has collision with ground object, remove the reference
                                 else if (objectA.GetGroundObject() == objectB)
                                    objectA.SetGroundObject(null);
                                 break;
@@ -83,6 +82,7 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.Sphere_AABBCollision(sphere3, aabb))
                                     OnCollisionHandler.OnSphere_AABBCollision(objectA, objectB);
+                                //if no longer has collision with ground object, remove the reference
                                 else if (objectA.GetGroundObject() == objectB)
                                     objectA.SetGroundObject(null);
                                 break;
@@ -129,6 +129,7 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.AABB_PlaneCollision(aabb1, plane))
                                     OnCollisionHandler.OnAABB_PlaneCollision(objectA, objectB);
+                                //if no longer has collision with ground object, remove the reference
                                 else if (objectA.GetGroundObject() == objectB)
                                     objectA.SetGroundObject(null);
                                 break;
@@ -140,6 +141,7 @@ public class CustomPhysicsSystem : MonoBehaviour
 
                                 if (CollisionCheckHandler.AABB_AABBCollision(aabb2, aabb3))
                                     OnCollisionHandler.OnAABB_AABBCollision(objectA, objectB);
+                                //if no longer has collision with ground object, remove the reference
                                 else if (objectA.GetGroundObject() == objectB)
                                     objectA.SetGroundObject(null);
                                 break;
